@@ -132,7 +132,6 @@ class Bencode(object):
 
         All pairs consist of ByteString key followed by any valid data type
         """
-#        self._debug('Dictionary')
         self._pointer += 1  # Consume the 'd' start character
         be_dict = {}
         while self._ben_string[self._pointer] != 'e':
@@ -148,7 +147,6 @@ class Bencode(object):
         
         All members of the list as simply appended together in Bencode format to make up <contents>
         """
-#        self._debug('List')
         self._pointer += 1  # Consume the 'l' start character
         val = []
         
@@ -163,25 +161,18 @@ class Bencode(object):
         Parses a Bencoded Integer type of format i<number>e
         """
         self._pointer += 1  # Consume the 'i' start character
-        
-        mult = 1  # Sign multiplier to handle positive/negative
-
-        # Check for negative number
-        if self._ben_string[self._pointer] == '-':
-            mult = -1
-            self._pointer += 1  # Consume the '-' character
-        return self._get_number('e') * mult
+        return self._get_number('e')
 
     def _get_number(self, end_char):
         """ 
         Returns number in string up to termination character given. 
         """
         
-        num = 0
+        start_pointer = self._pointer
         while self._ben_string[self._pointer] != end_char:
-            num = num*10 + int(self._ben_string[self._pointer])
             self._pointer += 1
-        self._pointer += 1  # Consume the 'e' termination character
+        num = int(self._ben_string[start_pointer:self._pointer])  # Parse int
+        self._pointer += 1  # Consume the end_char
         return num
         
     def _parse_byte_string(self):
